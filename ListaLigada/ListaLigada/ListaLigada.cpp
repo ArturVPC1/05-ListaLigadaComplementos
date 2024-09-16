@@ -8,6 +8,7 @@ struct NO {
 };
 
 NO* primeiro = NULL;
+NO* ultimo = NULL;
 
 // headers
 void menu();
@@ -69,7 +70,7 @@ void menu()
 
 void inicializar()
 {
-	// se a lista j� possuir elementos
+	// se a lista ja possuir elementos
 // libera a memoria ocupada
 	NO* aux = primeiro;
 	while (aux != NULL) {
@@ -122,11 +123,16 @@ void inserirElemento()
 
 	cout << "Digite o elemento: ";
 	cin >> novo->valor;
+	if (posicaoElemento(novo->valor) != NULL) {
+		cout << "Ja existe esse valor\n";
+		return;
+	}
 	novo->prox = NULL;
-
+	ultimo = novo;
 	if (primeiro == NULL)
 	{
 		primeiro = novo;
+		ultimo = novo;
 	}
 	else
 	{
@@ -136,17 +142,71 @@ void inserirElemento()
 			aux = aux->prox;
 		}
 		aux->prox = novo;
+		ultimo = novo;
 	}
-}
-
-void excluirElemento()
-{
-
 }
 
 void buscarElemento()
 {
+	int valorBusca;
+	cout << "Digite um valor para ser buscado: ";
+	cin >> valorBusca;
 
+	NO* result = posicaoElemento(valorBusca);
+
+	if (result != NULL) {
+		cout << "O valor foi encontrado na lista\n";
+		return;
+	}
+	cout << "O valor nao foi encontrado na lista\n";
 }
 
+NO* posicaoElemento(int numero)
+{
+	NO* aux = primeiro;
+	while (aux != NULL) {
+		if (aux->valor == numero)
+		{
+			break;
+		}
+		aux = aux->prox;
+	}
+	return aux;
+}
 
+void excluirElemento()
+{
+	int valorDeletar;
+	cout << "Digite o valor a ser deletado: \n";
+	cin >> valorDeletar;
+	NO* knotToDelete = posicaoElemento(valorDeletar);
+	if (knotToDelete == NULL || primeiro == NULL) {
+		cout << "O valor nao foi encontrado para ser deletado ou a lista está vazia\n";
+		return;
+	}
+	if (knotToDelete->prox != NULL) {
+		NO* knotToSearch = primeiro;
+		NO* previousKnot = NULL;
+		while (knotToSearch->valor != valorDeletar && knotToSearch->prox != NULL) {
+			previousKnot = knotToSearch;
+			knotToSearch = knotToSearch->prox;
+		}
+		if (previousKnot == NULL) { //caso onde precisamos deletar o primeiro elemento
+			primeiro = primeiro->prox;
+			return;
+			if (primeiro == ultimo) { //caso onde precisamos deletar o único elemento da lista
+				primeiro = NULL;
+				return;
+			}
+		}
+		if (knotToSearch->prox == NULL) {//caso onde precisamos deletar o útlimo elemento
+			previousKnot->prox = NULL;
+			free(knotToSearch);
+			return;
+		}
+		previousKnot->prox = knotToSearch->prox;
+		free(knotToSearch);
+		cout << "Lista atual\n";
+		exibirElementos();
+	}
+}
